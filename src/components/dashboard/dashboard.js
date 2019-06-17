@@ -119,7 +119,8 @@ class Dashboard extends React.Component {
     }
 
     componentWillUnmount() {
-        this.chatObserver();
+        if(this.chatObserver)
+            this.chatObserver();
     }
 
     render() {
