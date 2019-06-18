@@ -6,71 +6,86 @@ import { FaPaperPlane } from 'react-icons/fa';
 import firebase from "firebase";
 
 class ChatBox extends React.Component {
-    state = { value: "" }
-    
-    handleChange = (e) => {
-        this.setState({ value : e.target.value });
-    }
 
-    onSubmit = async (e) => {
+    constructor(props) {
+        super(props);
+
+        this.state = { message: "" };
+        
+        this.onMessageChange = this.onMessageChange.bind(this);
+        this.onMessageSubmit = this.onMessageSubmit.bind(this);
+    };
+    
+    onMessageChange(e) {
+        this.setState({ message: e.target.value });
+    };
+
+    async onMessageSubmit(e) {
         e.preventDefault();
+
         let userHandles = this.props.user.localeCompare(this.props.selectedUser)
                             ? [this.props.user, this.props.selectedUser]
-                            : [this.props.selectedUser, this.props.user];                            ;
+                            : [this.props.selectedUser, this.props.user];
+
         let userIDs = this.props.selectedChatID.split("_");
+
         let currentTime = await firebase
             .firestore
             .Timestamp
             .now()
             .toMillis();
 
-            firebase
-                .firestore()
-                .collection("chats")
-                .doc(this.props.selectedChatID)
-                .set({
-                    chatID: this.props.selectedChatID,
-                    messages: {
-                        [currentTime] : {
-                            message: this.state.value,
-                            seen: false,
-                            sender: this.props.user,
-                        }
-                    },
-                    latestMessage : currentTime,
-                    users : userIDs,
-                    userHandles : userHandles
-                    }, {merge:true})
-                .catch(err => alert(err));
+        firebase
+            .firestore()
+            .collection("chats")
+            .doc(this.props.selectedChatID)
+            .set({
+                chatID: this.props.selectedChatID,
+                messages: {
+                    [currentTime] : {
+                        message: this.state.message,
+                        seen: false,
+                        sender: this.props.user,
+                    }
+                },
+                latestMessage: currentTime,
+                users: userIDs,
+                userHandles: userHandles
+                }, {merge: true})
+            .catch(e => alert(e));
     };
     
     render() {
-        return <Container style={{ padding : "0rem 0.5rem"}} className="chatbox-container">
-            {this.props.chat !== null
-                ? <Input
-                    placeholder="Enter Message..."
-                    onChange={this.handleChange}
-                    ref= "input"
-                    rightButtons={
-                        <FaPaperPlane 
-                            onClick={this.onSubmit}
-                        />
-                            
-                    }
-                    onKeyPress={async (e) => {
-                        if (e.shiftKey && e.charCode === 13) {
-                            return true;
+        return (
+            <Container style={{
+                    padding: "0 0.5rem",
+                    borderStyle: "solid",
+                    borderWidth: "1px",
+                    marginTop: "1rem"
+                }}
+            >
+                {this.props.chat !== null
+                    ? <Input
+                        placeholder="Enter Message..."
+                        onChange={this.onMessageChange}
+                        ref="input"
+                        rightButtons={
+                            <FaPaperPlane 
+                                onClick={this.onMessageSubmit}
+                            />
                         }
-                        if (e.charCode === 13) {
-                            await this.onSubmit(e); 
-                            this.refs.input.clear();
-                            return false;
-                        }
-                    }}
-                />
-                : null
-            }
-        </Container>
+                        onKeyPress={async (e) => {
+                            if (e.charCode === 13) {
+                                await this.onMessageSubmit(e); 
+                                this.refs.input.clear();
+                            }
+                            return;
+                        }}
+                    />
+                    : null
+                }
+            </Container>
+        );
     }
 }
 

@@ -1,17 +1,4 @@
-/* Login Page */
-
-.btn-back {
-    padding: 5rem 1.5rem;
-    font-size: 1.5rem;
-}
-
-/* Chat Box */
-.chatbox-container {
-    border-style: solid;
-    border-width: 1px;
-    margin-top: 20px;
-}
-
+/* Override React Chat Elements */
 /* Chat SideBar */
 .rce-citem-avatar {
     padding: 0 10px 0 5px !important;

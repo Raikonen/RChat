@@ -1,8 +1,7 @@
 import React from 'react';
-import { Container,Image, Dropdown, DropdownButton, Nav, Navbar, Spinner } from 'react-bootstrap';
+import { Container, Image, Dropdown, DropdownButton, Nav, Navbar, Spinner } from 'react-bootstrap';
 import firebase from "firebase";
 
-import '../../assets/styles.css';
 import Avatar from '../../assets/avatar_placeholder.png';
 
 import SetHandle from './setHandle';
@@ -25,23 +24,33 @@ class Dashboard extends React.Component {
 
         firebaseError: "",
     }
-
-    redirectToLogin = () => this.setState({redirecting:false}, this.props.history.push('/login'));
-
-    signOut = async () => {
-        await firebase.auth().signOut();
-        console.log("signed out");
+    
+    componentDidMount() {
+        this.getUser();
     }
 
-    getUser = async () => {
+    componentWillUnmount() {
+        if(this.chatObserver)
+            this.chatObserver();
+    }
+
+    async signOut() {
+        await firebase
+            .auth()
+            .signOut();
+    }
+
+    async getUser() {
         // Update current user
         await firebase
             .auth()
             .onAuthStateChanged( 
                 async (user) => {
+                    
                     // If Logged In
                     if (user) {
-                        await this.setState({loggedIn : true});
+                        await this.setState({ loggedIn: true });
+                        
                         // Prompt user to set handle if undefined
                         let userData = await firebase
                             .firestore()
@@ -50,26 +59,25 @@ class Dashboard extends React.Component {
                             .get();
 
                         let handle = userData.get("handle");
-                        if( handle === undefined) {
-                            await this.setState( {showHandleForm : true, userID : await userData.get("userID")});
-                        }
+
+                        if (handle === undefined)
+                            await this.setState({ showHandleForm: true, userID: await userData.get("userID") });
                         else
-                            await this.setState({userHandle : handle, userID : await userData.get("userID")})
+                            await this.setState({ userHandle: handle, userID: await userData.get("userID") });
 
                         // Set user email and document chatObserver for the user
-                        await this.setState({userEmail : user.email}, this.setObserver);
+                        await this.setState({ userEmail: user.email }, this.setObserver);
+                    } else {
+                        // If Logged Out, change redirecting state and redirect after 2 seconds
+                        await this.setState({ redirecting: true });
+                        setTimeout(() => this.setState({ userEmail: null }, this.redirectToLogin()), 2000);
                     }
-                    // If Logged Out
-                    else {
-                        // Change redirecting state and redirect after 2 seconds
-                        await this.setState({redirecting : true});
-                        setTimeout(() => this.setState({userEmail : null}, this.redirectToLogin()), 2000);
-                    }
-            })
+            }
+        )
     }
 
-    setObserver = () => {
-        this.chatObserver = firebase
+    async setObserver() {
+        this.chatObserver = await firebase
             .firestore()
             .collection("chats")
             .where("users", "array-contains", this.state.userID)
@@ -80,14 +88,11 @@ class Dashboard extends React.Component {
                         let chat = documentSnapshot.data();
                         myChats.push(chat);
                 });
-                this.setState({chats : myChats});
-            }
-            , err => {
-                this.setState({firebaseError : err});
+                this.setState({ chats: myChats });
+            }, e => {
+                this.setState({ firebaseError: e.message });
             });
     }
-
-    updateHandle = (handle) => this.setState({showHandleForm : false, userHandle : handle});
 
     setHandle = async (newHandle) => {
         return await firebase
@@ -95,85 +100,95 @@ class Dashboard extends React.Component {
             .collection("users")
             .where("handle", "==", newHandle)
             .get()
-            .then(async res => res.empty 
+            .then(async (res) => res.empty 
                 ? await firebase
                     .firestore()
                     .collection("users")
                     .doc(this.state.userEmail)
-                    .set({handle : newHandle}, {merge : true})
+                    .set({ handle : newHandle }, { merge : true })
                     .then(() => true)
-                    .catch(e => {
-                        this.setState({ firebaseError: e.message }, () => alert(this.state.firebaseError));
+                    .catch((e) => {
+                        this.setState({ firebaseError: e.message });
                     })
                 : false
             )
-            .catch(e => {   
-                this.setState({ firebaseError: e.message }, () => alert(this.state.firebaseError));
+            .catch((e) => {
+                this.setState({ firebaseError: e.message });
             }); 
         }
 
+    redirectToLogin = () => this.setState({ redirecting: false }, this.props.history.push('/login'));
 
-    componentDidMount() {
-        this.getUser();
-    }
-
-    componentWillUnmount() {
-        if(this.chatObserver)
-            this.chatObserver();
-    }
-
+    updateHandle = (handle) => this.setState({ showHandleForm: false, userHandle: handle });
+    
     render() {
-        return <div>
-            {this.state.showHandleForm 
-                ? <SetHandle updateHandle = {this.updateHandle} setHandle={this.setHandle}/>
-                : null }
+        return (
+            <div>
+                {this.state.showHandleForm 
+                    ? <SetHandle 
+                        updateHandle={this.updateHandle} 
+                        setHandle={this.setHandle}
+                    />
+                    : null
+                }
 
-            <div style={{backgroundColor:"#343a40"}}>
-                <Container>
-                    <Navbar bg="dark" variant="dark">
-                        <Navbar.Brand>
-                        { 'RCHAT' }
-                        </Navbar.Brand>
-                        <Navbar.Collapse>
-                            <Nav className="justify-content-end" style={{ marginRight:"20px", width: "100%" }}>
-                                <Nav>
-                                    <DropdownButton
-                                        title = {
-                                            <Image height="32px" width="32px" style={{marginTop:"2px", marginRight:"20px"}} src={Avatar}/>
-                                        }
-                                        variant="secondary" 
-                                        id="dropdown-basic">
-                                        <Dropdown.Menu>
-                                            <Dropdown.Item disabled>Currently Logged in as: </Dropdown.Item>
-                                            <Dropdown.Item disabled>{this.state.userHandle ? this.state.userHandle : this.state.userEmail}</Dropdown.Item>
-                                            <Dropdown.Divider />
-                                            <Dropdown.Item onClick={this.signOut}>Sign Out!</Dropdown.Item>
-                                        </Dropdown.Menu>
-                                    </DropdownButton>
+                <div style={{ backgroundColor: "#343a40" }}>
+                    <Container>
+                        <Navbar bg="dark" variant="dark">
+                            <Navbar.Brand>{ 'RCHAT' }</Navbar.Brand>
+                            <Navbar.Collapse>
+                                <Nav 
+                                    className="justify-content-end"
+                                    style={{ marginRight: "20px", width: "100%" }}
+                                >
+                                    <Nav>
+                                        <DropdownButton
+                                            title = {
+                                                <Image
+                                                    height="32px"
+                                                    width="32px"
+                                                    style={{ marginTop: "2px", marginRight: "20px" }}
+                                                    src={ Avatar }/>
+                                            }
+                                            variant="secondary"
+                                            id="dropdown-basic"
+                                        >
+                                            <Dropdown.Menu>
+                                                <Dropdown.Item disabled>Currently logged in as:</Dropdown.Item>
+                                                <Dropdown.Item disabled>
+                                                    {this.state.userHandle ? this.state.userHandle : this.state.userEmail}
+                                                </Dropdown.Item>
+                                                <Dropdown.Divider />
+                                                <Dropdown.Item onClick={this.signOut}>Sign Out!</Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </DropdownButton>
+                                    </Nav>
                                 </Nav>
-                            </Nav>
-                        </Navbar.Collapse>
-                    </Navbar>
-                </Container>
-            </div>
+                            </Navbar.Collapse>
+                        </Navbar>
+                    </Container>
+                </div>
 
-            <Container style={{backgroundColor:"white", width:"100%", height:'calc(100vh - 64px)'}}>
-                    { this.state.redirecting
-                        ? <Container style={{textAlign:"center"}}>
-                            <Spinner animation="grow" size="sm" /> Redirecting to Login Page...
-                            </Container>
-                    
+                <Container
+                    style={{ backgroundColor: "white", width: "100%", height: "calc(100vh - 64px)" }}
+                >
+                    {this.state.redirecting
+                        ? <Container style={{ textAlign: "center" }}>
+                            <Spinner animation="grow" size="sm"/>
+                            <span>{` `}Redirecting to Login Page...</span>
+                        </Container>
                         : null
                     }
-                    { this.state.loggedIn
+                    {this.state.loggedIn
                         ? <ChatComponent 
                             user = {this.state.userHandle} 
                             userID = {this.state.userID}
-                            chats = {this.state.chats} />
+                            chats = {this.state.chats}/>
                         : null
                     }
-            </Container>
-        </div>
+                </Container>
+            </div>
+        );
     }
 }
 

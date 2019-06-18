@@ -44,7 +44,10 @@ class EmailForm extends React.Component {
                 }
             })
             .catch(
-                () => {this.setState({ firebaseError: "A server error occurred. Please wait a bit and try again"});
+                () => { 
+                    this.setState({ 
+                        firebaseError: "A server error occurred. Please wait a bit and try again"}
+                    );
             });
     }
 
@@ -57,11 +60,11 @@ class EmailForm extends React.Component {
         e.stopPropagation();
 
         // Clear error and update states
-        this.setState({ firebaseError: "", isLoading : true, isFormValidated : true});
+        this.setState({ firebaseError: "", isLoading: true, isFormValidated: true});
 
         // Check for email validity
         if (!this.checkValidEmail()) {
-            this.setState({ isEmailValid: false, isLoading : false })
+            this.setState({ isEmailValid: false, isLoading: false })
             return;
         } else {
             this.setState({ isEmailValid: true })
@@ -72,10 +75,10 @@ class EmailForm extends React.Component {
 
         // Update States and callback
         if (isValidUser) {
-            this.setState({ isFormValidated: false,  isLoading : false })
+            this.setState({ isFormValidated: false,  isLoading: false })
             this.props.emailFound(this.state.email);
         } else {
-            this.setState({ isLoading : false })
+            this.setState({ isLoading: false })
         }
     }
 
@@ -135,11 +138,17 @@ class EmailForm extends React.Component {
                                 }
                                 {this.state.isFormValidated
                                     ? (!this.state.isEmailValid)
-                                        ? <Form.Control.Feedback type="invalid">Please Enter a Valid Email</Form.Control.Feedback>
-                                        : <Form.Control.Feedback type="invalid">User Not Found</Form.Control.Feedback>
+                                        ? <Form.Control.Feedback type="invalid">
+                                            Please Enter a Valid Email
+                                        </Form.Control.Feedback>
+                                        : <Form.Control.Feedback type="invalid">
+                                            User Not Found
+                                        </Form.Control.Feedback>
                                     : null
                                 }
-                                <Form.Text className="text-muted">We'll never share your email with anyone else.</Form.Text>
+                                <Form.Text className="text-muted">
+                                    We'll never share your email with anyone else.
+                                </Form.Text>
                             </Form.Group>
 
                         {/* Firebase Error Display*/}
@@ -169,7 +178,9 @@ class EmailForm extends React.Component {
                 <Modal.Footer>
                     <Alert>
                         Don't Have An Account?{` `}
-                    <Alert.Link href="#" onClick={this.redirectToSignup}>Sign Up Here!</Alert.Link>
+                        <Alert.Link href="#" onClick={this.redirectToSignup}>
+                            Sign Up Here!
+                        </Alert.Link>
                     </Alert>
                 </Modal.Footer>
             </Modal.Dialog>
