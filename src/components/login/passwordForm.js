@@ -1,8 +1,8 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 import { Container, Col, Row, Modal, Button, Image, Form, Alert, Spinner } from 'react-bootstrap';
 import Stepper from "react-stepper-horizontal";
 import firebase from "firebase";
-import { withRouter } from 'react-router-dom';
 
 import '../../assets/styles.css';
 import Avatar from '../../assets/avatar_placeholder.png';
@@ -90,7 +90,7 @@ class PasswordForm extends React.Component {
                         </Col>
                         <Col></Col>
                     </Row>
-                    <Row className="modal-title">
+                    <Row style={{justifyContent:"center", color:"grey"}}>
                         <Modal.Title>User Login</Modal.Title>
                     </Row>
                     <Row>

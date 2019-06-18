@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 import { Route, Redirect, BrowserRouter as Router } from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';
 
-import Login from './components/login/login';
-import Signup from './components/signup/signup';
-import Dashboard from './components/dashboard/dashboard';
+import Login from './components/login/';
+import Signup from './components/signup/';
+import Dashboard from './components/dashboard/';
 import 'bootstrap/dist/css/bootstrap.css';
 import './index.css';
 

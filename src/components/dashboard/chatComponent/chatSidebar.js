@@ -1,7 +1,7 @@
 import React from 'react';
-import { Container, Row, Col, Button, FormControl, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, FormControl, Form, InputGroup } from 'react-bootstrap';
 import { ChatList } from 'react-chat-elements';
-import { FaSearch} from 'react-icons/fa'
+import { FaSearch } from 'react-icons/fa'
 import firebase from "firebase";
 
 
@@ -38,7 +38,9 @@ class ChatSidebar extends React.Component {
     }
     
     showAddChatForm = () => this.setState(prevState => ({
-        addingChat: !prevState.addingChat
+        addingChat: !prevState.addingChat,
+        userToBeAdded: "",
+        invalidUser: false,
         }));
 
 
@@ -66,7 +68,7 @@ class ChatSidebar extends React.Component {
         let formStyle = {
             marginLeft : "-5px", 
             block : true, 
-            placeholder : "Enter User Email",
+            placeholder : "Handle",
             value : this.state.userToBeAdded,
             onChange : (e) => this.setState({userToBeAdded : e.target.value}),
             onKeyPress : async (e) => {
@@ -75,38 +77,64 @@ class ChatSidebar extends React.Component {
             }}
         };
 
-        return <Container>
-            <Row className="justify-content-md-center" style={{paddingBottom:"0.5rem"}}>
-                <Button variant="outline-success" block onClick={this.showAddChatForm}>Add Chat</Button>
-            </Row>
-            {this.state.addingChat 
-            ? <Form.Row style={{paddingBottom:"0.5rem"}}>
-                <Col md={10} lg={10}>
-                    { this.state.invalidUser
-                        ? <FormControl 
-                            {...formStyle}
-                            isInvalid = {true}
-                            />
-                        : <FormControl 
-                            {...formStyle}
-                            />
-                    }
-                    <Form.Control.Feedback type="invalid">User Not Found</Form.Control.Feedback>
-                </Col>
-                <Col md={2} lg={2}>
-                    <Button variant="outline-success" style={{marginRight:"5px"}} onClick={this.addChat}>
-                        <FaSearch/>
-                    </Button>
-                </Col>
-            </Form.Row>
-            : null
-            }   
-            <ChatList
-                className='chat-list'
-                dataSource={this.formatChatItems()} 
-                onClick={(c) => this.props.setSelectedChat(c.title)}      
-            />
-            </Container>
+        return <div>
+            <Col style={{padding:"0px"}}>
+                <Row 
+                    style={{ margin:"1rem 0rem", height:"3rem", backgroundColor:"#d7ecff", padding:"0.7rem 0rem 0rem 0rem"}}>
+                    <Container style={{ textAlign:"center" }}>
+                        Chats
+                    </Container>
+                </Row>
+                <Row>
+                    {/* Add Chat Interface */}
+                    <Container style={{paddingBottom: "1rem"}}>
+                        <Col>
+                            <Row style={{padding:"0rem 1rem 0.5rem 1rem"}}>
+                                    <Button variant="outline-success" block onClick={this.showAddChatForm}>Add Chat</Button>
+                            </Row>
+                            <Row style={{padding:"0rem 1rem 0rem 1rem"}}>
+                                {this.state.addingChat 
+                                    ? <InputGroup>
+                                    { this.state.invalidUser
+                                            ? <FormControl 
+                                                {...formStyle}
+                                                isInvalid = {true}
+                                                />
+                                            : <FormControl 
+                                                {...formStyle}
+                                                />
+                                        }
+                                        <Form.Control.Feedback type="invalid">User Not Found</Form.Control.Feedback>
+                                        { this.state.invalidUser
+                                            ? null 
+                                            : <InputGroup.Append>
+                                                <Button
+                                                    variant="outline-success" 
+                                                    style={{margin:"0px"}} 
+                                                    onClick={this.addChat}>
+                                                    <FaSearch/>
+                                                </Button>
+                                            </InputGroup.Append>
+                                        }
+                                </InputGroup>
+                                : null
+                                }
+                            </Row>
+                        </Col>
+                    </Container>
+                </Row>
+                <Row>
+                    <Container>
+                        <ChatList
+                            className='chat-list'
+                            dataSource={this.formatChatItems()} 
+                            onClick={(c) => this.props.setSelectedChat(c.title)}      
+                        />
+                    </Container>
+                </Row>
+            </Col>
+        </div>
+
     }
 }
 

@@ -6,7 +6,7 @@ import '../../assets/styles.css';
 import Avatar from '../../assets/avatar_placeholder.png';
 
 import SetHandle from './setHandle';
-import ChatComponent from './chatComponent/chatComponent';
+import ChatComponent from './chatComponent/';
 
 class Dashboard extends React.Component {
 
@@ -51,10 +51,10 @@ class Dashboard extends React.Component {
 
                         let handle = userData.get("handle");
                         if( handle === undefined) {
-                            await this.setState( {showHandleForm : true, userID : userData.get("userID")});
+                            await this.setState( {showHandleForm : true, userID : await userData.get("userID")});
                         }
                         else
-                            await this.setState({userHandle : handle, userID : userData.get("userID")})
+                            await this.setState({userHandle : handle, userID : await userData.get("userID")})
 
                         // Set user email and document chatObserver for the user
                         await this.setState({userEmail : user.email}, this.setObserver);
@@ -74,7 +74,6 @@ class Dashboard extends React.Component {
             .collection("chats")
             .where("users", "array-contains", this.state.userID)
             .onSnapshot(docSnapshot => {
-                console.log("Snapshotted");
                 let myChats = [];
                 docSnapshot.forEach(
                     (documentSnapshot) => {
@@ -91,7 +90,7 @@ class Dashboard extends React.Component {
     updateHandle = (handle) => this.setState({showHandleForm : false, userHandle : handle});
 
     setHandle = async (newHandle) => {
-        return await firebase  
+        return await firebase
             .firestore()
             .collection("users")
             .where("handle", "==", newHandle)
@@ -124,7 +123,7 @@ class Dashboard extends React.Component {
     }
 
     render() {
-        return <div >
+        return <div>
             {this.state.showHandleForm 
                 ? <SetHandle updateHandle = {this.updateHandle} setHandle={this.setHandle}/>
                 : null }
@@ -160,7 +159,7 @@ class Dashboard extends React.Component {
 
             <Container style={{backgroundColor:"white", width:"100%", height:'calc(100vh - 64px)'}}>
                     { this.state.redirecting
-                        ? <Container>
+                        ? <Container style={{textAlign:"center"}}>
                             <Spinner animation="grow" size="sm" /> Redirecting to Login Page...
                             </Container>
                     

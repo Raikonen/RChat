@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
-import { Input, Button } from 'react-chat-elements';
+import { Input } from 'react-chat-elements';
+import { FaPaperPlane } from 'react-icons/fa';
 
 import firebase from "firebase";
 
@@ -44,18 +45,17 @@ class ChatBox extends React.Component {
     };
     
     render() {
-        return <Container style={{ padding : "2px"}} className="chatbox-container">
+        return <Container style={{ padding : "0rem 0.5rem"}} className="chatbox-container">
             {this.props.chat !== null
                 ? <Input
                     placeholder="Enter Message..."
                     onChange={this.handleChange}
                     ref= "input"
                     rightButtons={
-                        <Button
+                        <FaPaperPlane 
                             onClick={this.onSubmit}
-                            color='black'
-                            backgroundColor='aquamarine'
-                            text='Send'/>
+                        />
+                            
                     }
                     onKeyPress={async (e) => {
                         if (e.shiftKey && e.charCode === 13) {

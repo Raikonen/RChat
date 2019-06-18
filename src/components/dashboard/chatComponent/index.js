@@ -5,7 +5,6 @@ import 'react-chat-elements/dist/main.css';
 import ChatDisplay from './chatDisplay';
 import ChatBox from './chatBox';
 import ChatSidebar from './chatSidebar';
-import ChatTopbar from './chatTopbar';
 
 /* Chat Format
 {
@@ -61,26 +60,16 @@ class ChatComponent extends React.Component {
     }
 
     render() {
-        return <Container>
+        return <div style={{height:"100%"}}>
             {this.props.chats === null
                 ? <Container style={{paddingTop:"10rem", textAlign:"center"}}>
                     <Spinner animation="border" role="status" variant="info"/>
                     <br></br>
                     Loading Chats...
                 </Container>
-                : <Container style={{padding:"0px", margin:"0px"}}>  
-                    <Row md={2} lg={2} >
-                        {this.state.selectedUser
-                            ? <ChatTopbar
-                                selectedUser={this.state.selectedUser}
-                            />
-                            : <ChatTopbar
-                                selectedUser={""} 
-                            />
-                        }
-                    </Row>
-                    <Row md={10} lg={10}>
-                        <Col md={3} lg={3}>
+                : <div style={{height:"100%"}}>  
+                    <Row style={{height:"100%"}}>
+                        <Col xs={0} sm={0} md={3} lg={3}>
                                 <ChatSidebar 
                                     chats={this.props.chats} 
                                     user={this.props.user}
@@ -89,13 +78,20 @@ class ChatComponent extends React.Component {
                                     dateFormatter={this.dateFormatter}
                                 />
                         </Col>
-                        <Col md={true} lg={true}>
+                        <Col style={{ padding:"0px" }} xs={0} sm={0} md={"auto"} lg={"auto"}>
+                            <div style={{padding:"1rem 0rem", width:"0.5rem", height:"100%"}}>
+                                <div style={{backgroundColor:"#DCDCDC", height:"100%"}}>
+                                </div>
+                            </div>
+                        </Col>
+                        <Col xs={true} sm={true} md={true} lg={true}>
                             {this.state.selectedChatID
-                                ? <Container>
+                                ? <div >
                                     <ChatDisplay
                                         chats={this.props.chats}
                                         selectedChatID={this.state.selectedChatID}
-                                        user={this.props.user} 
+                                        user={this.props.user}
+                                        selectedUser={this.state.selectedUser}
                                         dateFormatter={this.dateFormatter}
                                         />
                                     <ChatBox 
@@ -103,14 +99,23 @@ class ChatComponent extends React.Component {
                                         selectedUser={this.state.selectedUser}
                                         user={this.props.user}
                                     />
+                                </div>
+                                : <Container style={{ padding:"0px" }}>
+                                   <Col 
+                                    style={{ textAlign:"center", margin:"1rem 0rem", height:"3rem", backgroundColor:"#d7ecff", paddingTop:"0.7rem"}}>
+                                    </Col>
+                                    <Col>
+                                        <Container className="text-muted" style={{textAlign: "center", paddingTop:"6rem"}}>
+                                            Please add or select a chat to start messaging!
+                                        </Container>
+                                    </Col>
                                 </Container>
-                                : null
                             }
                         </Col>
                     </Row>  
-                </Container>  
+                </div>  
             }
-        </Container>
+        </div>
     }
 }
 

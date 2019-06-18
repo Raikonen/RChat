@@ -1,26 +1,4 @@
-
-/* Form */
-.form-div {
-    background-image: url("https://i.redd.it/ra6dwrgej7231.jpg");
-    background-size:100%;
-    display: flex;
-    height: 100vh;
-    align-items: center;
-    justify-content: center;
-}
-/* Signup Page */
-.form-container {
-    background-color: white;
-    border-style: solid;
-    border-width: 2px;
-    padding: 20px 20px 20px 20px;
-}
-
 /* Login Page */
-.modal-title {
-    justify-content: center;
-    color: grey;
-}
 
 .btn-back {
     padding: 5rem 1.5rem;
@@ -36,5 +14,5 @@
 
 /* Chat SideBar */
 .rce-citem-avatar {
-    padding: 0 15px 0 0 !important;
+    padding: 0 10px 0 5px !important;
 }
