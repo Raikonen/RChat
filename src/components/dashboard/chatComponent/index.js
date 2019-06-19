@@ -23,6 +23,11 @@ import ChatSidebar from './chatSidebar';
 }
 */
 
+/** TODO
+ * Add read/unread feature
+ * Css for TopBar and fonts
+ */
+
 class ChatComponent extends React.Component {
 
     state = {
