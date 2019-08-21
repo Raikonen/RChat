@@ -4,14 +4,14 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.3.1",
-    "firebase": "^6.1.1",
-    "react": "^16.8.6",
+    "firebase": "^6.4.0",
+    "react": "^16.9.0",
     "react-bootstrap": "^1.0.0-beta.9",
-    "react-chat-elements": "^10.5.0",
-    "react-dom": "^16.8.6",
+    "react-chat-elements": "^10.7.1",
+    "react-dom": "^16.9.0",
     "react-icons": "^3.7.0",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "3.0.1",
+    "react-scripts": "3.1.1",
     "react-stepper-horizontal": "^1.0.11"
   },
   "scripts": {
